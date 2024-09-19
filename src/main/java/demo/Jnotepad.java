@@ -195,9 +195,29 @@ public class Jnotepad extends JFrame {
         });
 
         itemPrint.addActionListener(e -> {
-        Potn dlg = new Potn(null, true);
-        dlg.setLocationRelativeTo(null);
-        dlg.setVisible(true);
+            PrinterJob job = PrinterJob.getPrinterJob();
+            job.setPrintable(new Printable() {
+                @Override
+                public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+                    if (pageIndex > 0) {
+                        return NO_SUCH_PAGE;
+                    }
+                    Graphics2D g2d = (Graphics2D) graphics;
+                    g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+                    g2d.scale(0.8, 0.8); 
+                    txtEditor.printAll(g2d);
+                    return PAGE_EXISTS;
+                }
+            });
+
+            boolean doPrint = job.printDialog();
+            if (doPrint) {
+                try {
+                    job.print();
+                } catch (PrinterException ex) {
+                    ex.printStackTrace();
+                }
+            }
         });
         itemFind.addActionListener(e -> {
             String searchTerm = JOptionPane.showInputDialog(Jnotepad.this, "Enter text to find:");
@@ -276,7 +296,7 @@ public class Jnotepad extends JFrame {
     toolbar.add(btNew);
     toolbar.add(btOpen);
     toolbar.add(btSave);
-    //chèn iocn
+    
     btNew.setIcon(new ImageIcon(this.getClass().getResource("/images/new.png")));
     btOpen.setIcon(new ImageIcon(this.getClass().getResource("/images/open.png")));
     btSave.setIcon(new ImageIcon(this.getClass().getResource("/images/save.png")));
