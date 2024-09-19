@@ -30,6 +30,8 @@ public class Jnotepad extends JFrame {
     private JMenuItem itemUndo, itemCut, itemCopy, itemPaste, itemDelete, itemSearch, itemFind, itemReplace, itemGoto, itemSelect, itemTime;
     private JMenuItem itemFont, itemZoomOn, itemZoomIn, itemSend, itemAbout;
     private JCheckBoxMenuItem itemWord, itemBar;
+    private JToolBar toolbar;
+    private JButton btNew,btOpen,btSave;
     private int size = 14;
 
     JTextArea txtEditor;
@@ -38,6 +40,7 @@ public class Jnotepad extends JFrame {
     public Jnotepad(String title) {
         super(title);
         createMenu();
+        createJToolBar();
         txtEditor = new JTextArea();
         JScrollPane scrollEditor = new JScrollPane(txtEditor);
         add(scrollEditor);
@@ -192,29 +195,9 @@ public class Jnotepad extends JFrame {
         });
 
         itemPrint.addActionListener(e -> {
-            PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPrintable(new Printable() {
-                @Override
-                public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-                    if (pageIndex > 0) {
-                        return NO_SUCH_PAGE;
-                    }
-                    Graphics2D g2d = (Graphics2D) graphics;
-                    g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-                    g2d.scale(0.8, 0.8); 
-                    txtEditor.printAll(g2d);
-                    return PAGE_EXISTS;
-                }
-            });
-
-            boolean doPrint = job.printDialog();
-            if (doPrint) {
-                try {
-                    job.print();
-                } catch (PrinterException ex) {
-                    ex.printStackTrace();
-                }
-            }
+        Potn dlg = new Potn(null, true);
+        dlg.setLocationRelativeTo(null);
+        dlg.setVisible(true);
         });
         itemFind.addActionListener(e -> {
             String searchTerm = JOptionPane.showInputDialog(Jnotepad.this, "Enter text to find:");
@@ -281,6 +264,25 @@ public class Jnotepad extends JFrame {
             fos.write(txtEditor.getText().getBytes("UTF-8"));
             fos.close();
         }
+    }
+    private void createJToolBar() {
+       
+    toolbar = new JToolBar();
+
+    btNew = new JButton();
+    btOpen = new JButton();
+    btSave = new JButton();
+
+    toolbar.add(btNew);
+    toolbar.add(btOpen);
+    toolbar.add(btSave);
+    //chèn iocn
+    btNew.setIcon(new ImageIcon(this.getClass().getResource("/images/new.png")));
+    btOpen.setIcon(new ImageIcon(this.getClass().getResource("/images/open.png")));
+    btSave.setIcon(new ImageIcon(this.getClass().getResource("/images/save.png")));
+
+    
+    add(toolbar, BorderLayout.NORTH);
     }
 
     public static void main(String[] args) {
